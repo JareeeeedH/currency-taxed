@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Currency Exchange</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.0/vue.js'></script>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/css/bootstrap.css'/>
+
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0-9/css/all.css'/>
+
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+    <div id="app">
+        <header>
+            <h2>
+                <span class='switcher' @click='open = !open'> <i class="fas fa-bars"></i> </span>
+                CurrencyExcange | 各國匯率計算器
+            </h2>                   
+        </header>
+        
+        <div class="currencies" :class={show:open}>
+                <span class="currency" v-for='item in allList' @click='addInto(item)'>
+                    <span class='cur-code'>{{item.currencyCode}}</span> | 
+                    <span class='cur-name'>{{item.currencyName}}</span>
+                </span>
+        </div>
+
+        <div class="searcher">
+
+            <label for="money">從</label>
+            <select id='money' v-model='selecting'>
+                <option disabled>選擇幣別</option>
+                <option :value="item.currencyCode" v-for='(item, key) in allList'> {{item.currencyCode}}</option>
+            </select>
+
+            <label for="amount">兌換</label>
+            <input type="number" min='1' class="amount" id='amount' v-model='inputingAmount'>
+
+            <input type="button" class="count" value='$' @click='exchangeUp'>
+        </div>
+
+        <div class="monitor">
+            <div class="target">
+                
+                <h3>{{ CurrencyFrom }}/{{ inputingAmount}}</h3>
+
+                <div class='extra-area'>
+                    <span> {{ inputingAmount }} X </span>
+                    <span>
+                        <input type="number" placeholder="comm" v-model='comm' min='1'> +
+                    </span>
+                    <span>
+                        <input type="number" placeholder="freight" v-model='freight' min='1'> =
+                    </span>
+                    <span class='font-light'> {{ taxAmount }}</span>
+                </div>
+
+
+            </div>
+            <div class="exchanges">
+                <ul>
+                    <li v-for='item in CurrencyTo'>
+
+                        <div class='each-cur'>
+                            <span class='swap-btn' @click='swapHandler(item)'>
+                                <i class="fas fa-exchange-alt"></i>
+                            </span>
+                            
+                            <span class='rate-area'>
+                                <span>{{item}}匯率:</span>
+                                <span>({{apiData[item]}})</span>
+                            </span>
+
+                            <span class='amount-area'>
+
+                                <span>
+                                    <div class='origin-amout'>
+                                        <span>兌換金額$ :</span>
+                                        <span class='font-light'>
+                                            {{(Math.floor(apiData[item] * inputingAmount*100)/100)}}
+                                        </span>
+                                    </div>
+                                    
+                                    <div class='tax-amount' v-show='item=="TWD"'>
+                                        <span>
+                                            +
+                                        </span>
+                                        <input type="number" v-model='alcoholConcentrationTax'>
+                                        <span>
+                                            X
+                                        </span>
+                                        <input type="number" v-model='importTax'>
+                                        <span class='font-light'>
+                                        = 
+                                        {{ 
+                                            ((((Math.floor(apiData[item] * inputingAmount*100)/100)) + alcoholConcentrationTax ) * importTax).toFixed(2)
+                                        }}
+                                        </span>
+                                    </div>
+                                </span>
+
+                            </span>
+
+                            <span @click='delHandler(item)' class='del-btn'>
+                                <i class="far fa-trash-alt"></i>
+                            </span>
+                        </div>
+
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+
+    <script>
+
+        const KEY = "7bfc76964178a9c917534d6b"
+        let myApi = "https://v6.exchangerate-api.com/v6/7bfc76964178a9c917534d6b/latest/USD"
+        let apiLink = "https://v6.exchangerate-api.com/v6/7bfc76964178a9c917534d6b/latest/"
+        // let website = 'https://www.exchangerate-api.com/docs/supported-currencies';
+
+
+        let vm = new Vue({                      
+            el:'#app',
+            data:{
+                allList:[
+                            {
+                                "currencyCode": "AED",
+                                "currencyName": "UAE Dirham",
+                                "CountryName": "United Arab Emirates"
+                            },
+                            {
+                                "currencyCode": "AUD",
+                                "currencyName": "Australian Dollar",
+                                "CountryName": "Australia"
+                            },
+                            {
+                                "currencyCode": "CHF",
+                                "currencyName": "Swiss Franc",
+                                "CountryName": "Switzerland"
+                            },
+                            {
+                                "currencyCode": "CNY",
+                                "currencyName": "Chinese Renminbi",
+                                "CountryName": "China"
+                            },
+                            {
+                                "currencyCode": "EUR",
+                                "currencyName": "Euro",
+                                "CountryName": "European Union"
+                            },
+                            {
+                                "currencyCode": "GBP",
+                                "currencyName": "Pound Sterling",
+                                "CountryName": "United Kingdom"
+                            },
+                            {
+                                "currencyCode": "HKD",
+                                "currencyName": "Hong Kong Dollar",
+                                "CountryName": "Hong Kong"
+                            },
+                            {
+                                "currencyCode": "JPY",
+                                "currencyName": "Japanese Yen",
+                                "CountryName": "Japan"
+                            },
+                            {
+                                "currencyCode": "SGD",
+                                "currencyName": "Singapore Dollar",
+                                "CountryName": "Singapore"
+                            },
+                            {
+                                "currencyCode": "THB",
+                                "currencyName": "Thai Baht",
+                                "CountryName": "Thailand"
+                            },
+                            {
+                                "currencyCode": "TWD",
+                                "currencyName": "New Taiwan Dollar",
+                                "CountryName": "Taiwan"
+                            },
+                            {
+                                "currencyCode": "USD",
+                                "currencyName": "United States Dollar",
+                                "CountryName": "United States"
+                            },],
+                open: false,
+                CurrencyFrom: 'GBP',
+                // amount: 1000,
+
+                selecting:'選擇幣別',
+                inputingAmount:1000,
+                CurrencyTo:['TWD','USD','JPY',"KRW","EUR"],
+
+                apiData:[],
+                rateList:[],
+
+                comm: 1.1,
+                freight: 20,
+
+                alcoholConcentrationTax: 80,
+                importTax: 1.05,
+
+                // Api
+                root : 'https://v6.exchangerate-api.com/v6',
+                key: "7bfc76964178a9c917534d6b",
+                version: 'latest'
+
+            },
+
+            computed:{
+                taxAmount(){
+                    return ((this.inputingAmount* this.comm) + this.freight).toFixed(2);
+                },
+            },
+            methods:{
+                getData(){
+
+                    let api = `${this.root}/${this.key}/${this.version}/${this.CurrencyFrom}`
+                    console.log(api)
+                
+                    axios.get(api)
+                    .then((response)=>{
+
+                        console.log(response)
+                        this.apiData = (response.data.conversion_rates);
+
+                        for(let key in this.apiData){
+                            let rate = 
+                            {currencyCode:key, currencyRate:this.apiData[key]};
+                            this.rateList.push(rate);
+                        }
+                    })
+                },
+                addInto(item){this.CurrencyTo.push(item.currencyCode)},
+                exchangeUp(){
+
+                    if(this.selecting == '選擇幣別'){
+                        alert('請選擇幣別');
+                        return;
+                    }
+
+                    this.amount = this.inputingAmount;
+                    this.CurrencyFrom = this.selecting;
+                    this.getData();
+
+                    this.localStorage_save();
+
+                },
+                delHandler(delItem){ 
+                    this.CurrencyTo.forEach((item,index)=>{
+
+                        if(delItem == item){
+                            this.CurrencyTo.splice(index,1)
+                        }
+                    })
+                },
+                swapHandler(item){
+
+                    let index = this.CurrencyTo.indexOf(item);
+                    this.CurrencyTo[index] = this.CurrencyFrom;
+
+                    this.CurrencyFrom = item;
+                    this.getData();
+                },
+
+                localStorage_save(){
+                    let curFrom = this.CurrencyFrom;
+                    localStorage.setItem('curFrom', curFrom);
+
+                    let exchangelist = JSON.stringify(this.CurrencyTo);
+                    localStorage.setItem('curTo', exchangelist)
+                },
+
+                lacalStorage_get(){
+                    let curFrom = localStorage.getItem('curFrom')||'USD'
+                    this.CurrencyFrom = curFrom;
+
+                    let exchangelist = JSON.parse(localStorage.getItem('curTo'))|| ['TWD','USD','JPY',"KRW","EUR"];
+                    this.CurrencyTo = exchangelist;
+                }
+            },
+            
+            created(){
+                this.getData();
+                this.lacalStorage_get();
+            },
+        })
+    </script>
+
+
+</body>
+</html>

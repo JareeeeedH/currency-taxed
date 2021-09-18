@@ -1,0 +1,175 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  text-decoration: none;
+  list-style: none;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.font-light {
+  font-weight: 600;
+}
+
+header h2 {
+  position: relative;
+  text-align: center;
+  padding: 1.5rem 0;
+  background: linear-gradient(90deg, #c2c2c2, #e4e4e4);
+  box-shadow: 0 8px 6px -6px black;
+}
+header h2 .switcher {
+  display: inline-block;
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  padding: 0.15rem 1rem;
+  color: white;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.currencies {
+  background: linear-gradient(90deg, #c2c2c2, #e4e4e4);
+  overflow: auto;
+  transition: height 0.3s ease;
+  height: 0;
+}
+
+.currencies.show {
+  height: 100px;
+  padding: 1rem;
+}
+
+.currency {
+  display: inline-block;
+  border-radius: 100px;
+  padding: 2px 5px;
+  margin: 0.25rem;
+  text-align: center;
+  background: #878699;
+  color: #323232;
+}
+.currency .cur-code {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.currency:hover {
+  cursor: pointer;
+  background: white;
+}
+
+.extra-area input {
+  width: 60px;
+  text-align: center;
+  padding: 1px 3px;
+  border: none;
+  border-radius: 3px;
+}
+
+.tax-amount {
+  margin-top: 10px;
+  margin-left: 10%;
+}
+.tax-amount input {
+  margin: 1px 0;
+  width: 60px;
+  text-align: center;
+  padding: 1px 3px;
+  border: none;
+  border-radius: 3px;
+}
+
+.searcher {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid black;
+  background: white;
+}
+.searcher label {
+  font-size: 20px;
+  font-weight: 600;
+}
+.searcher input, .searcher select {
+  width: 35%;
+  margin: 0 0.5rem;
+  padding: 5px;
+}
+.searcher .count {
+  width: 10%;
+  border-radius: 5px;
+  border: 2px solid #575656;
+  cursor: pointer;
+}
+.searcher .count:hover {
+  background-color: #c2c2c2;
+}
+
+.monitor {
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(90deg, #c2c2c2, #e4e4e4);
+}
+.monitor .target {
+  text-align: center;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  border-bottom: 5px solid #e6b01c;
+}
+.monitor .exchanges {
+  width: 100%;
+}
+.monitor .each-cur {
+  padding: 1rem;
+  box-shadow: 0px 2px 1px #e4e4e4;
+  display: flex;
+  align-items: center;
+}
+.monitor .swap-btn {
+  margin-right: 20px;
+  display: inline-block;
+  width: 30px;
+  height: 100%;
+  border-radius: 5px;
+  text-align: center;
+  border: 2px solid #464646;
+  cursor: pointer;
+}
+.monitor .swap-btn:hover {
+  background: #1f4ca0;
+  color: white;
+}
+.monitor .rate-area {
+  width: 25%;
+}
+.monitor .amount-area {
+  width: 55%;
+}
+.monitor .del-btn {
+  display: inline-block;
+  width: 30px;
+  height: 100%;
+  border-radius: 5px;
+  text-align: center;
+  border: 2px solid #777777;
+  cursor: pointer;
+}
+.monitor .del-btn:hover {
+  background: red;
+}/*# sourceMappingURL=style.css.map */
